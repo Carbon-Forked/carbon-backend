@@ -31,19 +31,14 @@ export class QuoteService implements OnModuleInit {
   private readonly SKIP_TIMEOUT = 24 * 60 * 60; // 24 hours in seconds
   private shouldPollQuotes: boolean;
   private readonly priceProviders: BlockchainProviderConfig = {
-    [BlockchainType.Ethereum]: [
+    // [BlockchainType.Ethereum]: [
+    //   { name: 'coingecko', enabled: true },
+    //   { name: 'codex', enabled: true },
+    // ],
+    [BlockchainType.HederaTesnet]: [
       { name: 'coingecko', enabled: true },
-      { name: 'codex', enabled: true },
+      // { name: 'codex', enabled: true },
     ],
-    [BlockchainType.Sei]: [{ name: 'codex', enabled: true }],
-    [BlockchainType.Celo]: [{ name: 'codex', enabled: true }],
-    [BlockchainType.Blast]: [{ name: 'codex', enabled: true }],
-    [BlockchainType.Base]: [{ name: 'codex', enabled: true }],
-    [BlockchainType.Mantle]: [{ name: 'codex', enabled: true }],
-    [BlockchainType.Linea]: [{ name: 'codex', enabled: true }],
-    [BlockchainType.Berachain]: [{ name: 'codex', enabled: true }],
-    [BlockchainType.Coti]: [],
-    [BlockchainType.Iota]: [],
   };
 
   constructor(
@@ -64,7 +59,7 @@ export class QuoteService implements OnModuleInit {
     if (this.shouldPollQuotes) {
       const callback = () => this.pollForLatest();
       const interval = setInterval(callback, this.intervalDuration);
-      this.schedulerRegistry.addInterval('pollForLatest', interval);
+      // this.schedulerRegistry.addInterval('pollForLatest', interval);
     }
   }
 
@@ -119,10 +114,6 @@ export class QuoteService implements OnModuleInit {
   }
 
   async pollForDeployment(deployment: Deployment): Promise<void> {
-    if (deployment.blockchainType === BlockchainType.Coti) {
-      return;
-    }
-
     try {
       const tokens = await this.tokenService.getTokensByBlockchainType(deployment.blockchainType);
       const addresses = tokens.map((t) => t.address);

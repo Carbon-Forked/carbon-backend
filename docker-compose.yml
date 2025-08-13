@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  aureus-redis:
+    image: redis:alpine
+    container_name: aureus_redis
+    restart: always
+    command: >
+      redis-server
+      --databases 16
+    ports:
+      - "6379:6379"
+    environment:
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_HOST: ${DATABASE_HOST}
+    volumes:
+      - aureus-db:/var/lib/redis/data
+
+  timescaledb:
+    image: timescale/timescaledb:2.14.2-pg16
+    restart: always
+    container_name: timescaledb
+    environment:
+      POSTGRES_USER: carbon
+      POSTGRES_PASSWORD: carbonpass
+      POSTGRES_DB: carbon
+    ports:
+      - "5432:5432"
+    volumes:
+      - timescale-db:/var/lib/postgresql/data
+
+volumes:
+  aureus-db:
+  timescale-db:

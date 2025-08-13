@@ -41,12 +41,12 @@ export enum ContractsNames {
 const Contracts = {
   [ContractsNames.ERC20]: ERC20,
   [ContractsNames.CarbonController]: CarbonController,
-  [ContractsNames.CarbonPOL]: CarbonPOL,
-  [ContractsNames.CarbonVortex]: CarbonVortex,
-  [ContractsNames.CarbonVoucher]: CarbonVoucher,
-  [ContractsNames.BancorArbitrage]: BancorArbitrage,
-  [ContractsNames.BancorArbitrageV2]: BancorArbitrageV2,
-  [ContractsNames.LiquidityProtectionStore]: LiquidityProtectionStore,
+  // [ContractsNames.CarbonPOL]: CarbonPOL,
+  // [ContractsNames.CarbonVortex]: CarbonVortex,
+  // [ContractsNames.CarbonVoucher]: CarbonVoucher,
+  // [ContractsNames.BancorArbitrage]: BancorArbitrage,
+  // [ContractsNames.BancorArbitrageV2]: BancorArbitrageV2,
+  // [ContractsNames.LiquidityProtectionStore]: LiquidityProtectionStore,
 };
 
 export interface ConstantField {
@@ -204,7 +204,7 @@ export class HarvesterService {
   async processEvents(args: ProcessEventsArgs): Promise<any[]> {
     const { deployment } = args;
     const key = `${deployment.blockchainType}-${deployment.exchangeId}-${args.entity}`;
-    const lastProcessedBlock = await this.lastProcessedBlockService.getOrInit(key, deployment.startBlock);
+    const lastProcessedBlock = await this.lastProcessedBlockService.getOrInit(key, deployment.startBlock); // 23290987;// 
     const result = [];
 
     if (args.skipPreClearing !== true) {

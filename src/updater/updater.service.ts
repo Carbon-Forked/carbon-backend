@@ -16,7 +16,7 @@ import { VoucherTransferEventService } from '../events/voucher-transfer-event/vo
 import { AnalyticsService } from '../v1/analytics/analytics.service';
 import { DexScreenerV2Service } from '../v1/dex-screener/dex-screener-v2.service';
 import { TvlService } from '../tvl/tvl.service';
-import { Deployment, DeploymentService } from '../deployment/deployment.service';
+import { BlockchainType, Deployment, DeploymentService } from '../deployment/deployment.service';
 import { ArbitrageExecutedEventService } from '../events/arbitrage-executed-event/arbitrage-executed-event.service';
 import { ArbitrageExecutedEventServiceV2 } from '../events/arbitrage-executed-event-v2/arbitrage-executed-event-v2.service';
 import { VortexTokensTradedEventService } from '../events/vortex-tokens-traded-event/vortex-tokens-traded-event.service';
@@ -85,6 +85,8 @@ export class UpdaterService {
   }
 
   async updateDeployment(deployment: Deployment): Promise<void> {
+    if (deployment.blockchainType === BlockchainType.Ethereum) return;
+
     const deploymentKey = `${deployment.blockchainType}:${deployment.exchangeId}`;
     if (this.isUpdating[deploymentKey]) return;
 
@@ -112,86 +114,86 @@ export class UpdaterService {
       await this.pairCreatedEventService.update(endBlock, deployment);
       console.log(`CARBON SERVICE - Finished pairs creation events for ${deployment.exchangeId}`);
 
-      // handle VortexTokensTraded events
-      await this.vortexTokensTradedEventService.update(endBlock, deployment);
-      console.log(`CARBON SERVICE - Finished Vortex tokens traded events for ${deployment.exchangeId}`);
+      // // handle VortexTokensTraded events
+      // await this.vortexTokensTradedEventService.update(endBlock, deployment);
+      // console.log(`CARBON SERVICE - Finished Vortex tokens traded events for ${deployment.exchangeId}`);
 
-      // handle ArbitrageExecuted events
-      await this.arbitrageExecutedEventService.update(endBlock, deployment);
-      console.log(`CARBON SERVICE - Finished updating arbitrage executed events for ${deployment.exchangeId}`);
+      // // handle ArbitrageExecuted events
+      // await this.arbitrageExecutedEventService.update(endBlock, deployment);
+      // console.log(`CARBON SERVICE - Finished updating arbitrage executed events for ${deployment.exchangeId}`);
 
-      // handle ArbitrageExecuted V2 events
-      await this.arbitrageExecutedEventServiceV2.update(endBlock, deployment);
-      console.log(`CARBON SERVICE - Finished updating arbitrage executed V2 events for ${deployment.exchangeId}`);
+      // // handle ArbitrageExecuted V2 events
+      // await this.arbitrageExecutedEventServiceV2.update(endBlock, deployment);
+      // console.log(`CARBON SERVICE - Finished updating arbitrage executed V2 events for ${deployment.exchangeId}`);
 
       // handle VortexTradingReset events
-      await this.vortexTradingResetEventService.update(endBlock, deployment);
-      console.log(`CARBON SERVICE - Finished updating vortex trading reset events for ${deployment.exchangeId}`);
+      // await this.vortexTradingResetEventService.update(endBlock, deployment);
+      // console.log(`CARBON SERVICE - Finished updating vortex trading reset events for ${deployment.exchangeId}`);
 
       // handle ProtectionRemoved events
-      await this.protectionRemovedEventService.update(endBlock, deployment);
-      console.log(`CARBON SERVICE - Finished updating protection removed events for ${deployment.exchangeId}`);
+      // await this.protectionRemovedEventService.update(endBlock, deployment);
+      // console.log(`CARBON SERVICE - Finished updating protection removed events for ${deployment.exchangeId}`);
 
       // TODO: REQUIRES HANDLING THE ABI TYPE MISMATCH
       // handle VortexFundsWithdrawn events
       // await this.vortexFundsWithdrawnEventService.update(endBlock, deployment);
       // console.log(`CARBON SERVICE - Finished Vortex funds withdrawn events for ${deployment.exchangeId}`);
 
-      // create tokens
-      await this.tokenService.update(endBlock, deployment);
-      const tokens = await this.tokenService.allByAddress(deployment);
-      console.log(`CARBON SERVICE - Finished tokens for ${deployment.exchangeId}`);
+      // // create tokens
+      // await this.tokenService.update(endBlock, deployment);
+      // const tokens = await this.tokenService.allByAddress(deployment);
+      // console.log(`CARBON SERVICE - Finished tokens for ${deployment.exchangeId}`);
 
-      // create pairs
-      await this.pairService.update(endBlock, tokens, deployment);
-      const pairs = await this.pairService.allAsDictionary(deployment);
-      console.log(`CARBON SERVICE - Finished pairs for ${deployment.exchangeId}`);
+      // // create pairs
+      // await this.pairService.update(endBlock, tokens, deployment);
+      // const pairs = await this.pairService.allAsDictionary(deployment);
+      // console.log(`CARBON SERVICE - Finished pairs for ${deployment.exchangeId}`);
 
-      // create strategies
-      await this.strategyService.update(endBlock, pairs, tokens, deployment);
-      console.log(`CARBON SERVICE - Finished strategies for ${deployment.exchangeId}`);
+      // // create strategies
+      // await this.strategyService.update(endBlock, pairs, tokens, deployment);
+      // console.log(`CARBON SERVICE - Finished strategies for ${deployment.exchangeId}`);
 
-      // create trades
-      await this.tokensTradedEventService.update(endBlock, pairs, tokens, deployment);
-      console.log(`CARBON SERVICE - Finished trades for ${deployment.exchangeId}`);
+      // // create trades
+      // await this.tokensTradedEventService.update(endBlock, pairs, tokens, deployment);
+      // console.log(`CARBON SERVICE - Finished trades for ${deployment.exchangeId}`);
 
-      // update carbon price
-      await this.carbonPriceService.update(endBlock, deployment);
-      console.log(`CARBON SERVICE - Finished updating carbon price for ${deployment.exchangeId}`);
+      // // update carbon price
+      // await this.carbonPriceService.update(endBlock, deployment);
+      // console.log(`CARBON SERVICE - Finished updating carbon price for ${deployment.exchangeId}`);
 
       // coingecko tickers - fetch quotes first and pass them to update method
-      const quotesCTE = await this.quoteService.prepareQuotesForQuery(deployment);
-      await this.coingeckoService.update(deployment, quotesCTE);
-      console.log(`CARBON SERVICE - Finished updating coingecko tickers for ${deployment.exchangeId}`);
+      // const quotesCTE = await this.quoteService.prepareQuotesForQuery(deployment);
+      // await this.coingeckoService.update(deployment, quotesCTE);
+      // console.log(`CARBON SERVICE - Finished updating coingecko tickers for ${deployment.exchangeId}`);
 
       // DexScreener V2 - incremental processing
-      await this.dexScreenerV2Service.update(endBlock, deployment, tokens);
-      console.log(`CARBON SERVICE - Finished updating DexScreener V2 for ${deployment.exchangeId}`);
+      // await this.dexScreenerV2Service.update(endBlock, deployment, tokens);
+      // console.log(`CARBON SERVICE - Finished updating DexScreener V2 for ${deployment.exchangeId}`);
 
       // trading fee events
-      await this.tradingFeePpmUpdatedEventService.update(endBlock, deployment);
-      console.log(`CARBON SERVICE - Finished updating trading fee events for ${deployment.exchangeId}`);
+      // await this.tradingFeePpmUpdatedEventService.update(endBlock, deployment);
+      // console.log(`CARBON SERVICE - Finished updating trading fee events for ${deployment.exchangeId}`);
 
       // pair trading fee events
-      await this.pairTradingFeePpmUpdatedEventService.update(endBlock, pairs, tokens, deployment);
-      console.log(`CARBON SERVICE - Finished updating pair trading fee events for ${deployment.exchangeId}`);
+      // await this.pairTradingFeePpmUpdatedEventService.update(endBlock, pairs, tokens, deployment);
+      // console.log(`CARBON SERVICE - Finished updating pair trading fee events for ${deployment.exchangeId}`);
 
-      await this.voucherTransferEventService.update(endBlock, deployment);
-      console.log(`CARBON SERVICE - Finished updating voucher transfer events for ${deployment.exchangeId}`);
+      // await this.voucherTransferEventService.update(endBlock, deployment);
+      // console.log(`CARBON SERVICE - Finished updating voucher transfer events for ${deployment.exchangeId}`);
 
-      await this.activityV2Service.update(endBlock, deployment, tokens);
-      console.log(`CARBON SERVICE - Finished updating activities for ${deployment.exchangeId}`);
+      // await this.activityV2Service.update(endBlock, deployment, tokens);
+      // console.log(`CARBON SERVICE - Finished updating activities for ${deployment.exchangeId}`);
 
       // update merkl rewards
-      await this.merklProcessorService.update(endBlock, deployment);
-      console.log(`CARBON SERVICE - Finished updating merkl rewards for ${deployment.exchangeId}`);
+      // await this.merklProcessorService.update(endBlock, deployment);
+      // console.log(`CARBON SERVICE - Finished updating merkl rewards for ${deployment.exchangeId}`);
 
-      await this.tvlService.update(endBlock, deployment);
-      console.log(`CARBON SERVICE - Finished updating tvl for ${deployment.exchangeId}`);
+      // await this.tvlService.update(endBlock, deployment);
+      // console.log(`CARBON SERVICE - Finished updating tvl for ${deployment.exchangeId}`);
 
       // handle notifications
-      await this.notificationService.update(endBlock, deployment);
-      console.log(`CARBON SERVICE - Finished notifications for ${deployment.exchangeId}`);
+      // await this.notificationService.update(endBlock, deployment);
+      // console.log(`CARBON SERVICE - Finished notifications for ${deployment.exchangeId}`);
 
       console.log(`CARBON SERVICE - Finished update iteration for ${deploymentKey} in:`, Date.now() - t, 'ms');
       this.isUpdating[deploymentKey] = false;

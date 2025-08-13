@@ -48,19 +48,12 @@ export class HistoricQuoteService implements OnModuleInit {
   private priceProviders: BlockchainProviderConfig = {
     [BlockchainType.Ethereum]: [
       { name: 'coinmarketcap', enabled: true },
-      { name: 'codex', enabled: true },
+      // { name: 'codex', enabled: true },
     ],
-    [BlockchainType.Sei]: [{ name: 'codex', enabled: true }],
-    [BlockchainType.Celo]: [{ name: 'codex', enabled: true }],
-    [BlockchainType.Blast]: [{ name: 'codex', enabled: true }],
-    [BlockchainType.Base]: [{ name: 'codex', enabled: true }],
-    [BlockchainType.Fantom]: [{ name: 'codex', enabled: true }],
-    [BlockchainType.Mantle]: [{ name: 'codex', enabled: true }],
-    [BlockchainType.Linea]: [{ name: 'codex', enabled: true }],
-    [BlockchainType.Berachain]: [{ name: 'codex', enabled: true }],
-    [BlockchainType.Coti]: [{ name: 'carbon-defi', enabled: true }],
-    [BlockchainType.Iota]: [],
-    [BlockchainType.Tac]: [{ name: 'carbon-defi', enabled: true }],
+    [BlockchainType.HederaTesnet]: [
+      { name: 'coinmarketcap', enabled: true },
+      // { name: 'codex', enabled: true },
+    ]
   };
 
   constructor(
@@ -83,7 +76,7 @@ export class HistoricQuoteService implements OnModuleInit {
     if (this.shouldPollQuotes) {
       const callback = () => this.pollForUpdates();
       const interval = setInterval(callback, this.intervalDuration);
-      this.schedulerRegistry.addInterval('pollForUpdates', interval);
+      // this.schedulerRegistry.addInterval('pollForUpdates', interval);
     }
   }
 
@@ -121,9 +114,6 @@ export class HistoricQuoteService implements OnModuleInit {
       try {
         await Promise.all([
           await this.updateCoinMarketCapQuotes(),
-          await this.updateCodexQuotes(BlockchainType.Sei),
-          await this.updateCodexQuotes(BlockchainType.Celo),
-          // await this.updateCodexQuotes(BlockchainType.Base, BASE_NETWORK_ID),
         ]);
       } catch (error) {
         this.logger.error('Error updating historic quotes:', error);
@@ -400,8 +390,7 @@ export class HistoricQuoteService implements OnModuleInit {
           const batches = _.chunk(newQuotes, 1000);
           await Promise.all(batches.map((batch) => this.repository.save(batch)));
           this.logger.log(
-            `Token ${++i} of ${total}: Seeded ${
-              newQuotes.length
+            `Token ${++i} of ${total}: Seeded ${newQuotes.length
             } price points for Ethereum token ${ethereumTokenAddress} from Codex`,
           );
         }
@@ -923,14 +912,14 @@ export class HistoricQuoteService implements OnModuleInit {
             price.usd !== null && lastValidClose !== null
               ? Decimal.max(new Decimal(price.usd), lastValidClose)
               : price.usd !== null
-              ? new Decimal(price.usd)
-              : lastValidClose,
+                ? new Decimal(price.usd)
+                : lastValidClose,
           low:
             price.usd !== null && lastValidClose !== null
               ? Decimal.min(new Decimal(price.usd), lastValidClose)
               : price.usd !== null
-              ? new Decimal(price.usd)
-              : lastValidClose,
+                ? new Decimal(price.usd)
+                : lastValidClose,
           close: price.usd !== null ? new Decimal(price.usd) : null,
           provider: price.provider,
           mappedBaseToken,
@@ -1244,8 +1233,7 @@ export class HistoricQuoteService implements OnModuleInit {
 
             if (ratio.greaterThanOrEqualTo(thousandDecimal) || ratio.lessThanOrEqualTo(thousandthDecimal)) {
               this.logger.warn(
-                `Skipping extreme price jump for ${quote.tokenAddress}: ${lastQuote.usd} -> ${
-                  quote.usd
+                `Skipping extreme price jump for ${quote.tokenAddress}: ${lastQuote.usd} -> ${quote.usd
                 } (ratio: ${ratio.toFixed(2)}x)`,
               );
               return lastQuote;
@@ -1302,8 +1290,7 @@ export class HistoricQuoteService implements OnModuleInit {
 
       if (validBuckets.length < buckets.length) {
         this.logger.warn(
-          `Filtered out ${buckets.length - validBuckets.length} historic quotes with invalid data for ${
-            deployment.blockchainType
+          `Filtered out ${buckets.length - validBuckets.length} historic quotes with invalid data for ${deployment.blockchainType
           }:${deployment.exchangeId}`,
         );
       }

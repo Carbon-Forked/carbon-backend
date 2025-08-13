@@ -14,19 +14,12 @@ export class MarketRateController {
   private priceProviders: BlockchainProviderConfig = {
     [BlockchainType.Ethereum]: [
       { name: 'coingecko', enabled: true },
-      { name: 'codex', enabled: true },
+      // { name: 'codex', enabled: true },
     ],
-    [BlockchainType.Sei]: [{ name: 'codex', enabled: true }],
-    [BlockchainType.Celo]: [{ name: 'codex', enabled: true }],
-    [BlockchainType.Blast]: [{ name: 'codex', enabled: true }],
-    [BlockchainType.Base]: [{ name: 'codex', enabled: true }],
-    [BlockchainType.Fantom]: [{ name: 'codex', enabled: true }],
-    [BlockchainType.Mantle]: [{ name: 'codex', enabled: true }],
-    [BlockchainType.Linea]: [{ name: 'codex', enabled: true }],
-    [BlockchainType.Berachain]: [{ name: 'codex', enabled: true }],
-    [BlockchainType.Coti]: [],
-    [BlockchainType.Iota]: [],
-    [BlockchainType.Tac]: [],
+    [BlockchainType.HederaTesnet]: [
+      { name: 'coingecko', enabled: true },
+      // { name: 'codex', enabled: true },
+    ]
   };
 
   constructor(
@@ -34,7 +27,7 @@ export class MarketRateController {
     private codexService: CodexService,
     private coinGeckoService: CoinGeckoService,
     private quoteService: QuoteService,
-  ) {}
+  ) { }
 
   @Get('')
   @CacheTTL(1 * 1000)
