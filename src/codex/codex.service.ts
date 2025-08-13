@@ -6,7 +6,7 @@ import { BlockchainType, Deployment, NATIVE_TOKEN } from '../deployment/deployme
 
 export const NETWORK_IDS = {
   [BlockchainType.Ethereum]: 1,
-  [BlockchainType.HederaTesnet]: 296,
+  [BlockchainType.Hedera]: 295,
 };
 
 @Injectable()

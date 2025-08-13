@@ -14,11 +14,11 @@ export class MarketRateController {
   private priceProviders: BlockchainProviderConfig = {
     [BlockchainType.Ethereum]: [
       { name: 'coingecko', enabled: true },
-      // { name: 'codex', enabled: true },
+      { name: 'codex', enabled: true },
     ],
-    [BlockchainType.HederaTesnet]: [
+    [BlockchainType.Hedera]: [
       { name: 'coingecko', enabled: true },
-      // { name: 'codex', enabled: true },
+      { name: 'codex', enabled: false }, // Codex is not supported on Hedera
     ]
   };
 
@@ -27,7 +27,7 @@ export class MarketRateController {
     private codexService: CodexService,
     private coinGeckoService: CoinGeckoService,
     private quoteService: QuoteService,
-  ) { }
+  ) {}
 
   @Get('')
   @CacheTTL(1 * 1000)

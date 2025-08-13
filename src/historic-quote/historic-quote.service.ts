@@ -48,11 +48,11 @@ export class HistoricQuoteService implements OnModuleInit {
   private priceProviders: BlockchainProviderConfig = {
     [BlockchainType.Ethereum]: [
       { name: 'coinmarketcap', enabled: true },
-      // { name: 'codex', enabled: true },
+      { name: 'codex', enabled: true },
     ],
-    [BlockchainType.HederaTesnet]: [
+    [BlockchainType.Hedera]: [
       { name: 'coinmarketcap', enabled: true },
-      // { name: 'codex', enabled: true },
+      { name: 'codex', enabled: true },
     ]
   };
 
@@ -76,7 +76,7 @@ export class HistoricQuoteService implements OnModuleInit {
     if (this.shouldPollQuotes) {
       const callback = () => this.pollForUpdates();
       const interval = setInterval(callback, this.intervalDuration);
-      // this.schedulerRegistry.addInterval('pollForUpdates', interval);
+      this.schedulerRegistry.addInterval('pollForUpdates', interval);
     }
   }
 
@@ -135,7 +135,7 @@ export class HistoricQuoteService implements OnModuleInit {
    * Only saves new quotes if the price has changed from the latest stored value.
    */
   private async updateCoinMarketCapQuotes(): Promise<void> {
-    const latest = await this.getLatest(BlockchainType.Ethereum); // Pass the deployment to filter by blockchainType
+    const latest = await this.getLatest(BlockchainType.Hedera); // Pass the deployment to filter by blockchainType
     const quotes = await this.coinmarketcapService.getLatestQuotes();
     const newQuotes = [];
 
@@ -150,7 +150,7 @@ export class HistoricQuoteService implements OnModuleInit {
         if (existingUsdDecimal.equals(newUsdDecimal)) continue;
       }
 
-      q.blockchainType = BlockchainType.Ethereum;
+      q.blockchainType = BlockchainType.Hedera;
       newQuotes.push(this.repository.create(q));
     }
 
@@ -240,7 +240,7 @@ export class HistoricQuoteService implements OnModuleInit {
             usd: q.price,
             timestamp: moment.unix(q.timestamp).utc().toISOString(),
             provider: 'coinmarketcap',
-            blockchainType: BlockchainType.Ethereum,
+            blockchainType: BlockchainType.Hedera,
           }),
         );
 

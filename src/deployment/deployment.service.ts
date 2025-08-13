@@ -7,12 +7,12 @@ export const NATIVE_TOKEN = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
 export enum BlockchainType {
   Ethereum = 'ethereum',
-  HederaTesnet='hederatestnet'
+  Hedera = 'hedera'
 }
 
 export enum ExchangeId {
   OGEthereum = 'ethereum',
-  OGHederaTestnet = 'hederatestnet'
+  OGHedera = 'hedera'
 }
 
 export interface GasToken {
@@ -71,18 +71,19 @@ export class DeploymentService {
   private initializeDeployments(): Deployment[] {
     return [
       {
-        exchangeId: ExchangeId.OGHederaTestnet,
-        blockchainType: BlockchainType.HederaTesnet,
+        exchangeId: ExchangeId.OGHedera,
+        blockchainType: BlockchainType.Hedera,
         rpcEndpoint: this.configService.get('HEDERA_RPC_ENDPOINT'),
-        harvestEventsBatchSize: 100000,
+        harvestEventsBatchSize: 50000,
         harvestConcurrency: 10,
-        multicallAddress: '0xA13f9bcdeFeD39A3D3709A7EBD4967e2759AF1fa',
-        startBlock: 23297911,
+        multicallAddress: '0xe81c05D1113Ad86208b88B92239b87509A813619',
+        startBlock: 23290335,
         gasToken: {
           name: 'Hedera',
           symbol: 'HBAR',
-          address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
+          address: NATIVE_TOKEN
         },
+        nativeTokenAlias: '0x0000000000000000000000000000000000163b5a',
         contracts: {
           CarbonController: {
             address: '0x6F482F9c45ea2e6076748dE289eE55B95654A1bA',
@@ -94,7 +95,7 @@ export class DeploymentService {
             address: '0xD06146D292F9651C1D7cf54A3162791DFc2bEf46',
           },
           CarbonVoucher: {
-            address: '0x3660F04B79751e31128f6378eAC70807e38f554E',
+            address: '0x5253B5CCd337bbAB33817ac26CaB25c96c06D7d3',
           },
           BancorArbitrage: {
             address: '0x41Eeba3355d7D6FF628B7982F3F9D055c39488cB',
@@ -109,7 +110,7 @@ export class DeploymentService {
         notifications: {
           explorerUrl: this.configService.get('ETHEREUM_EXPLORER_URL'),
           carbonWalletUrl: this.configService.get('ETHEREUM_CARBON_WALLET_URL'),
-          title: 'Hedera Testnet',
+          title: 'Hedera',
           regularGroupEvents: [EventTypes.ProtectionRemovedEvent],
           telegram: {
             botToken: this.configService.get('ETHEREUM_TELEGRAM_BOT_TOKEN'),
@@ -123,7 +124,8 @@ export class DeploymentService {
           },
         },
         mapEthereumTokens: {
-          '0xfc60fc0145d7330e5abcfc52af7b043a1ce18e7d': '0xfc60fc0145d7330e5abcfc52af7b043a1ce18e7d', // governer self mapping
+          '0x0000000000000000000000000000000000068cda': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC Tesnet
+          '0x000000000000000000000000000000000006f89a': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC Mainnet
         },
       },
       {
@@ -162,7 +164,7 @@ export class DeploymentService {
             address: '0xf5FAB5DBD2f3bf675dE4cB76517d4767013cfB55',
           },
         },
-      }
+      },
     ];
   }
 

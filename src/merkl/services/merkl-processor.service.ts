@@ -91,19 +91,7 @@ export class MerklProcessorService {
       tokenWeightings: {},
       whitelistedAssets: [],
       defaultWeighting: 1, // Other assets get no incentives
-    },
-    // [ExchangeId.OGCoti]: {
-    //   tokenWeightings: {
-    //     '0xf1Feebc4376c68B7003450ae66343Ae59AB37D3C': 2.0,
-    //   },
-    //   whitelistedAssets: ['0x7637C7838EC4Ec6b85080F28A678F8E234bB83D1'],
-    //   defaultWeighting: 0,
-    // },
-    // [ExchangeId.OGTac]: {
-    //   tokenWeightings: {},
-    //   whitelistedAssets: [],
-    //   defaultWeighting: 1,
-    // },
+    }
   };
 
   constructor(

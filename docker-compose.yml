@@ -17,19 +17,18 @@ services:
     volumes:
       - aureus-db:/var/lib/redis/data
 
-  timescaledb:
+  aureus_timescaledb:
     image: timescale/timescaledb:2.14.2-pg16
     restart: always
-    container_name: timescaledb
+    container_name: aureus_timescaledb
     environment:
-      POSTGRES_USER: carbon
-      POSTGRES_PASSWORD: carbonpass
-      POSTGRES_DB: carbon
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
     ports:
       - "5432:5432"
     volumes:
-      - timescale-db:/var/lib/postgresql/data
+      - aureus-db:/var/lib/timescaledb/data
 
 volumes:
   aureus-db:
-  timescale-db:

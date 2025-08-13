@@ -1,12 +1,19 @@
 import { Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
-import { Deployment } from '../deployment/deployment.service';
+import { BlockchainType, Deployment } from '../deployment/deployment.service';
+
+export const NETWORK_IDS = {
+  [BlockchainType.Hedera]: 'hedera-hashgraph',
+  [BlockchainType.Ethereum]: 'ethereum'
+};
 
 @Injectable()
 export class CoinGeckoService {
   private readonly logger = new Logger(CoinGeckoService.name);
-  constructor(private configService: ConfigService) {}
+  constructor(private configService: ConfigService) {
+    this.baseURL = this.configService.get('COINGECKO_API_URL');
+  }
 
   private readonly baseURL = 'https://pro-api.coingecko.com/api/v3';
 
@@ -23,14 +30,14 @@ export class CoinGeckoService {
       }
 
       const requests = batches.map(async (batch) => {
-        return axios.get(`${this.baseURL}/simple/token_price/${blockchainType}`, {
+        return axios.get(`${this.baseURL}/simple/token_price/${NETWORK_IDS[blockchainType]}`, {
           params: {
             contract_addresses: batch.join(','),
             vs_currencies: convert.join(','),
             include_last_updated_at: true,
           },
           headers: {
-            'x-cg-pro-api-key': apiKey,
+            [this.configService.get('COINGECKO_API_AUTH_HEADER')]: apiKey,
           },
         });
       });
@@ -73,23 +80,23 @@ export class CoinGeckoService {
     try {
       const response = await axios.get(`${this.baseURL}/simple/price`, {
         params: {
-          ids: blockchainType,
+          ids: NETWORK_IDS[blockchainType],
           vs_currencies: convert.join(','),
           include_last_updated_at: true,
         },
         headers: {
-          'x-cg-pro-api-key': apiKey,
+            [this.configService.get('COINGECKO_API_AUTH_HEADER')]: apiKey,
         },
       });
 
       const result = {
         [gasToken.address.toLowerCase()]: {
-          last_updated_at: response.data[blockchainType]['last_updated_at'],
+          last_updated_at: response.data[NETWORK_IDS[blockchainType]]['last_updated_at'],
           provider: 'coingecko',
         },
       };
       convert.forEach((c) => {
-        result[gasToken.address.toLowerCase()][c.toLowerCase()] = response.data[blockchainType][c.toLowerCase()];
+        result[gasToken.address.toLowerCase()][c.toLowerCase()] = response.data[NETWORK_IDS[blockchainType]][c.toLowerCase()];
       });
       return result;
     } catch (error) {
@@ -116,7 +123,7 @@ export class CoinGeckoService {
             include_last_updated_at: true,
           },
           headers: {
-            'x-cg-pro-api-key': apiKey,
+            [this.configService.get('COINGECKO_API_AUTH_HEADER')]: apiKey,
           },
         });
       });

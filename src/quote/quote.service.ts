@@ -31,13 +31,9 @@ export class QuoteService implements OnModuleInit {
   private readonly SKIP_TIMEOUT = 24 * 60 * 60; // 24 hours in seconds
   private shouldPollQuotes: boolean;
   private readonly priceProviders: BlockchainProviderConfig = {
-    // [BlockchainType.Ethereum]: [
-    //   { name: 'coingecko', enabled: true },
-    //   { name: 'codex', enabled: true },
-    // ],
-    [BlockchainType.HederaTesnet]: [
+    [BlockchainType.Hedera]: [
       { name: 'coingecko', enabled: true },
-      // { name: 'codex', enabled: true },
+      { name: 'codex', enabled: true },
     ],
   };
 
@@ -59,7 +55,7 @@ export class QuoteService implements OnModuleInit {
     if (this.shouldPollQuotes) {
       const callback = () => this.pollForLatest();
       const interval = setInterval(callback, this.intervalDuration);
-      // this.schedulerRegistry.addInterval('pollForLatest', interval);
+      this.schedulerRegistry.addInterval('pollForLatest', interval);
     }
   }
 
@@ -119,7 +115,7 @@ export class QuoteService implements OnModuleInit {
       const addresses = tokens.map((t) => t.address);
 
       let newPrices;
-      if (deployment.blockchainType === BlockchainType.Ethereum) {
+      if (deployment.blockchainType === BlockchainType.Ethereum || deployment.blockchainType === BlockchainType.Hedera) {
         newPrices = await this.coingeckoService.getLatestPrices(addresses, deployment);
         const gasTokenPrice = await this.coingeckoService.getLatestGasTokenPrice(deployment);
         newPrices = { ...newPrices, ...gasTokenPrice };
