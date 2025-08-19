@@ -31,19 +31,10 @@ export class QuoteService implements OnModuleInit {
   private readonly SKIP_TIMEOUT = 24 * 60 * 60; // 24 hours in seconds
   private shouldPollQuotes: boolean;
   private readonly priceProviders: BlockchainProviderConfig = {
-    [BlockchainType.Ethereum]: [
+    [BlockchainType.Hedera]: [
       { name: 'coingecko', enabled: true },
       { name: 'codex', enabled: true },
     ],
-    [BlockchainType.Sei]: [{ name: 'codex', enabled: true }],
-    [BlockchainType.Celo]: [{ name: 'codex', enabled: true }],
-    [BlockchainType.Blast]: [{ name: 'codex', enabled: true }],
-    [BlockchainType.Base]: [{ name: 'codex', enabled: true }],
-    [BlockchainType.Mantle]: [{ name: 'codex', enabled: true }],
-    [BlockchainType.Linea]: [{ name: 'codex', enabled: true }],
-    [BlockchainType.Berachain]: [{ name: 'codex', enabled: true }],
-    [BlockchainType.Coti]: [],
-    [BlockchainType.Iota]: [],
   };
 
   constructor(
@@ -119,16 +110,12 @@ export class QuoteService implements OnModuleInit {
   }
 
   async pollForDeployment(deployment: Deployment): Promise<void> {
-    if (deployment.blockchainType === BlockchainType.Coti) {
-      return;
-    }
-
     try {
       const tokens = await this.tokenService.getTokensByBlockchainType(deployment.blockchainType);
       const addresses = tokens.map((t) => t.address);
 
       let newPrices;
-      if (deployment.blockchainType === BlockchainType.Ethereum) {
+      if (deployment.blockchainType === BlockchainType.Ethereum || deployment.blockchainType === BlockchainType.Hedera) {
         newPrices = await this.coingeckoService.getLatestPrices(addresses, deployment);
         const gasTokenPrice = await this.coingeckoService.getLatestGasTokenPrice(deployment);
         newPrices = { ...newPrices, ...gasTokenPrice };

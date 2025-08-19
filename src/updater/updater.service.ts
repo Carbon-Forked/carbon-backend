@@ -16,7 +16,7 @@ import { VoucherTransferEventService } from '../events/voucher-transfer-event/vo
 import { AnalyticsService } from '../v1/analytics/analytics.service';
 import { DexScreenerV2Service } from '../v1/dex-screener/dex-screener-v2.service';
 import { TvlService } from '../tvl/tvl.service';
-import { Deployment, DeploymentService } from '../deployment/deployment.service';
+import { BlockchainType, Deployment, DeploymentService } from '../deployment/deployment.service';
 import { ArbitrageExecutedEventService } from '../events/arbitrage-executed-event/arbitrage-executed-event.service';
 import { ArbitrageExecutedEventServiceV2 } from '../events/arbitrage-executed-event-v2/arbitrage-executed-event-v2.service';
 import { VortexTokensTradedEventService } from '../events/vortex-tokens-traded-event/vortex-tokens-traded-event.service';
@@ -70,7 +70,11 @@ export class UpdaterService {
   ) {
     const shouldHarvest = this.configService.get('SHOULD_HARVEST');
     if (shouldHarvest === '1') {
-      const deployments = this.deploymentService.getDeployments();
+      // Only schedule updates for Hedera deployments
+      const deployments = this.deploymentService.getDeployments().filter(
+        (deployment) => deployment.blockchainType === BlockchainType.Hedera
+      );
+
       deployments.forEach((deployment) => {
         const updateInterval = 5000; // Customize the interval as needed
         this.scheduleDeploymentUpdate(deployment, updateInterval);
@@ -113,24 +117,24 @@ export class UpdaterService {
       console.log(`CARBON SERVICE - Finished pairs creation events for ${deployment.exchangeId}`);
 
       // handle VortexTokensTraded events
-      await this.vortexTokensTradedEventService.update(endBlock, deployment);
-      console.log(`CARBON SERVICE - Finished Vortex tokens traded events for ${deployment.exchangeId}`);
+      // await this.vortexTokensTradedEventService.update(endBlock, deployment);
+      // console.log(`CARBON SERVICE - Finished Vortex tokens traded events for ${deployment.exchangeId}`);
 
       // handle ArbitrageExecuted events
-      await this.arbitrageExecutedEventService.update(endBlock, deployment);
-      console.log(`CARBON SERVICE - Finished updating arbitrage executed events for ${deployment.exchangeId}`);
+      // await this.arbitrageExecutedEventService.update(endBlock, deployment);
+      // console.log(`CARBON SERVICE - Finished updating arbitrage executed events for ${deployment.exchangeId}`);
 
       // handle ArbitrageExecuted V2 events
-      await this.arbitrageExecutedEventServiceV2.update(endBlock, deployment);
-      console.log(`CARBON SERVICE - Finished updating arbitrage executed V2 events for ${deployment.exchangeId}`);
+      // await this.arbitrageExecutedEventServiceV2.update(endBlock, deployment);
+      // console.log(`CARBON SERVICE - Finished updating arbitrage executed V2 events for ${deployment.exchangeId}`);
 
       // handle VortexTradingReset events
-      await this.vortexTradingResetEventService.update(endBlock, deployment);
-      console.log(`CARBON SERVICE - Finished updating vortex trading reset events for ${deployment.exchangeId}`);
+      // await this.vortexTradingResetEventService.update(endBlock, deployment);
+      // console.log(`CARBON SERVICE - Finished updating vortex trading reset events for ${deployment.exchangeId}`);
 
       // handle ProtectionRemoved events
-      await this.protectionRemovedEventService.update(endBlock, deployment);
-      console.log(`CARBON SERVICE - Finished updating protection removed events for ${deployment.exchangeId}`);
+      // await this.protectionRemovedEventService.update(endBlock, deployment);
+      // console.log(`CARBON SERVICE - Finished updating protection removed events for ${deployment.exchangeId}`);
 
       // TODO: REQUIRES HANDLING THE ABI TYPE MISMATCH
       // handle VortexFundsWithdrawn events
@@ -165,8 +169,8 @@ export class UpdaterService {
       console.log(`CARBON SERVICE - Finished updating coingecko tickers for ${deployment.exchangeId}`);
 
       // DexScreener V2 - incremental processing
-      await this.dexScreenerV2Service.update(endBlock, deployment, tokens);
-      console.log(`CARBON SERVICE - Finished updating DexScreener V2 for ${deployment.exchangeId}`);
+      // await this.dexScreenerV2Service.update(endBlock, deployment, tokens);
+      // console.log(`CARBON SERVICE - Finished updating DexScreener V2 for ${deployment.exchangeId}`);
 
       // trading fee events
       await this.tradingFeePpmUpdatedEventService.update(endBlock, deployment);
@@ -190,8 +194,8 @@ export class UpdaterService {
       console.log(`CARBON SERVICE - Finished updating tvl for ${deployment.exchangeId}`);
 
       // handle notifications
-      await this.notificationService.update(endBlock, deployment);
-      console.log(`CARBON SERVICE - Finished notifications for ${deployment.exchangeId}`);
+      // await this.notificationService.update(endBlock, deployment);
+      // console.log(`CARBON SERVICE - Finished notifications for ${deployment.exchangeId}`);
 
       console.log(`CARBON SERVICE - Finished update iteration for ${deploymentKey} in:`, Date.now() - t, 'ms');
       this.isUpdating[deploymentKey] = false;
