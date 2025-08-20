@@ -255,7 +255,7 @@ export class TokenService implements OnModuleInit {
     const decimals = await this.harvesterService.integersWithMulticall(addresses, decimalsABI, 'decimals', deployment);
     const index = addresses.indexOf(deployment.gasToken.address);
     if (index >= 0) {
-      decimals[index] = 18;
+      decimals[index] = deployment.gasToken.decimals;
     }
     return decimals;
   }

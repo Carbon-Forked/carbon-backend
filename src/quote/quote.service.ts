@@ -31,9 +31,13 @@ export class QuoteService implements OnModuleInit {
   private readonly SKIP_TIMEOUT = 24 * 60 * 60; // 24 hours in seconds
   private shouldPollQuotes: boolean;
   private readonly priceProviders: BlockchainProviderConfig = {
-    [BlockchainType.Hedera]: [
+    [BlockchainType.Ethereum]: [
       { name: 'coingecko', enabled: true },
       { name: 'codex', enabled: true },
+    ],
+    [BlockchainType.Hedera]: [
+      { name: 'coingecko', enabled: true },
+      { name: 'codex', enabled: false }, // Codex is not supported on Hedera
     ],
   };
 

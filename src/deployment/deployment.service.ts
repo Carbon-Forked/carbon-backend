@@ -18,6 +18,7 @@ export enum ExchangeId {
 export interface GasToken {
   name: string;
   symbol: string;
+  decimals: number;
   address: string;
 }
 
@@ -81,9 +82,9 @@ export class DeploymentService {
         gasToken: {
           name: 'Hedera',
           symbol: 'HBAR',
+          decimals: 8,
           address: NATIVE_TOKEN
         },
-        nativeTokenAlias: '0x0000000000000000000000000000000000163b5a',
         contracts: {
           CarbonController: {
             address: '0x6F482F9c45ea2e6076748dE289eE55B95654A1bA',
@@ -124,8 +125,7 @@ export class DeploymentService {
           },
         },
         mapEthereumTokens: {
-          '0x0000000000000000000000000000000000068cda': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC Tesnet
-          '0x000000000000000000000000000000000006f89a': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC Mainnet
+          '0x0000000000000000000000000000000000068cda': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' // USDC (Hedera Testnet) -> USDC (Ethereum Mainnet)
         },
       },
       {
@@ -139,6 +139,7 @@ export class DeploymentService {
         gasToken: {
           name: 'Ethereum',
           symbol: 'ETH',
+          decimals: 18,
           address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
         },
         contracts: {

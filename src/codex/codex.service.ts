@@ -5,8 +5,7 @@ import moment from 'moment';
 import { BlockchainType, Deployment, NATIVE_TOKEN } from '../deployment/deployment.service';
 
 export const NETWORK_IDS = {
-  [BlockchainType.Ethereum]: 1,
-  [BlockchainType.Hedera]: 295,
+  [BlockchainType.Ethereum]: 1
 };
 
 @Injectable()

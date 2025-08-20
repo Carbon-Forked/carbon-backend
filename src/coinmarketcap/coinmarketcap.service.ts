@@ -18,7 +18,10 @@ const HBAR_ID = 4642;
 
 @Injectable()
 export class CoinMarketCapService {
+  private readonly baseURL = 'https://pro-api.coinmarketcap.com';
+
   constructor(private readonly configService: ConfigService) {
+    this.baseURL = this.configService.get('COINMARKETCAP_API_URL');
   }
 
   private getApiKey(): string {
@@ -27,7 +30,7 @@ export class CoinMarketCapService {
 
   private async getTokenIds(tokenAddresses: string[]): Promise<string[]> {
     const apiKey = this.getApiKey();
-    const infoUrl = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/map';
+    const infoUrl = `${this.baseURL}/v1/cryptocurrency/map`;
 
     try {
       const response = await axios.get(infoUrl, {
@@ -55,7 +58,7 @@ export class CoinMarketCapService {
 
   private async getV3CryptocurrencyQuotesHistorical(params: any): Promise<AxiosResponse> {
     const apiKey = this.getApiKey();
-    const url = 'https://pro-api.coinmarketcap.com/v3/cryptocurrency/quotes/historical';
+    const url = `${this.baseURL}/v3/cryptocurrency/quotes/historical`;
 
     try {
       const response = await axios.get(url, { params, headers: { 'X-CMC_PRO_API_KEY': apiKey } });
@@ -66,7 +69,7 @@ export class CoinMarketCapService {
   }
 
   private async getV1CryptocurrencyListingsLatest(): Promise<any> {
-    const apiUrl = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest';
+    const apiUrl = `${this.baseURL}/v1/cryptocurrency/listings/latest`;
     const apiKey = this.getApiKey();
     const limit = 5000;
     const result: any[] = [];
@@ -119,7 +122,7 @@ export class CoinMarketCapService {
   }
 
   private async getV1CryptocurrencyMapTokens(): Promise<any[]> {
-    const apiUrl = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/map';
+    const apiUrl = `${this.baseURL}/v1/cryptocurrency/map`;
     const apiKey = this.getApiKey();
     const limit = 5000;
     const result: any[] = [];
@@ -164,7 +167,7 @@ export class CoinMarketCapService {
   }
 
   private async getV2CryptocurrencyQuotesLatest(ids: number[]): Promise<any> {
-    const apiUrl = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest';
+    const apiUrl = `${this.baseURL}/v1/cryptocurrency/quotes/latest`;
     const apiKey = this.getApiKey();
 
     try {
